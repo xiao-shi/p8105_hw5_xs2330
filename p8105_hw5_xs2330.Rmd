@@ -1,0 +1,22 @@
+---
+title: "p8105_hw5_xs2330"
+author: "Xiao Shi"
+date: "November 1, 2018"
+output: github_document
+---
+
+## Problem 1
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(purrr)
+library(rvest)
+```
+**initializing data frame and function construction**
+```{r, warning=FALSE}
+exp_result = data_frame()
+
+read_data = function(filepath){
+  read_csv(filepath)
+}
+```
