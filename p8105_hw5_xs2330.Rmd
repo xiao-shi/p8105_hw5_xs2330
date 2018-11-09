@@ -89,3 +89,28 @@ balti_result = broom::tidy(balti_homicide) %>%
   select(estimate, conf_low, conf_high)
 row.names(balti_result) = "Baltimore, MD"
 ```
+
+**all cities**
+
+**construct function**
+```{r}
+output_allcities = data_frame()
+
+prop.all = function(city_name){
+  x = as.integer(homicide_city_unsolved[which(homicide_city_unsolved$city_state == city_name),2])
+  n = as.integer(homicide_city_total[which(homicide_city_total$city_state == city_name),2])
+  test_result = prop.test(x,n) %>%
+    broom::tidy() %>%
+    janitor::clean_names() %>%
+    select(estimate, conf_low, conf_high)
+}
+```
+
+**use the prop.all function to extract results for all cities**
+```{r}
+output_allcities = purrr::map_df(.x = homicide_city_unsolved$city_state, prop.all) %>%
+  mutate(city = homicide_city_unsolved$city_state) %>%
+  select(city, estimate, conf_low, conf_high)
+knitr::kable(output_allcities)
+```
+
