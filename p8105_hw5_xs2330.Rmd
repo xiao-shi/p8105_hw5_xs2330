@@ -37,3 +37,13 @@ exp_cleaned = mutate(exp_result, specimen_id = csvs) %>%
   gather(key = week, value = score, week_1:week_8)
 knitr::kable(exp_cleaned[1:10,])
 ```
+
+
+**ploting experimental vs control group**
+```{r}
+ggplot(data = exp_cleaned, mapping = aes(x = week, y = score, group = unique_id, color = arm)) +
+  geom_line() +
+  labs(title = "Observations in experiment and control groups over eight weeks")
+```
+
+From the colored spagatti plot, we see a higher score distribution in the experimental group, and lower score distribution in the control group. Also, we observe that both groups started at approximately the same level. However, as we approach week_8, everyone in the experimental group has a hight score than everyone in the control group. Since the experiment is randomized, there is no need to distinguish within-group score differences, thus all subjects in the same arm are assigned the same color.
