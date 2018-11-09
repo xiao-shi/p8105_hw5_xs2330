@@ -20,3 +20,20 @@ read_data = function(filepath){
   read_csv(filepath)
 }
 ```
+**Use function read_data**
+```{r, message=FALSE}
+csvs = list.files("./")
+exp_result = purrr::map_df(.x = csvs[1:20], read_data)
+csvs = csvs[1:20] %>%
+  str_replace(".csv", "")
+```
+First got a variable with all necessary file names, then use the function read_data to get resulting data frame from 20 excel files. Finally, manipulate `csvs` for further use.
+
+**tidy results**
+```{r}
+exp_cleaned = mutate(exp_result, specimen_id = csvs) %>%
+  mutate(unique_id = specimen_id) %>%
+  separate(col = specimen_id, into = c("arm", "id"), sep = "_") %>%
+  gather(key = week, value = score, week_1:week_8)
+knitr::kable(exp_cleaned[1:10,])
+```
