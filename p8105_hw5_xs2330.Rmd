@@ -35,7 +35,7 @@ exp_cleaned = mutate(exp_result, specimen_id = csvs) %>%
   mutate(unique_id = specimen_id) %>%
   separate(col = specimen_id, into = c("arm", "id"), sep = "_") %>%
   gather(key = week, value = score, week_1:week_8)
-knitr::kable(exp_cleaned[1:10,])
+knitr::kable(exp_cleaned[1:6,])
 ```
 
 
@@ -47,3 +47,13 @@ ggplot(data = exp_cleaned, mapping = aes(x = week, y = score, group = unique_id,
 ```
 
 From the colored spagatti plot, we see a higher score distribution in the experimental group, and lower score distribution in the control group. Also, we observe that both groups started at approximately the same level. However, as we approach week_8, everyone in the experimental group has a hight score than everyone in the control group. Since the experiment is randomized, there is no need to distinguish within-group score differences, thus all subjects in the same arm are assigned the same color.
+
+## Problem 2
+**create city_state**
+```{r}
+raw_homicide = read_csv("./homicide-data.csv") 
+homicide = raw_homicide %>%
+  mutate(city_state = str_c(city, state, sep = ", ")) %>%
+  janitor::clean_names()
+```
+The raw homicide dataset consists of case information (uid, reported_date, disposition), geo information (city, state, lat, lon), and victim information (race, age, first and last name) of homocidal crimes on 50 large U.S. cities. The data is consist of `r nrow(homicide)` rows by `r ncol(homicide)` columns.
