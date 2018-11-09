@@ -56,8 +56,7 @@ homicide = raw_homicide %>%
   mutate(city_state = str_c(city, state, sep = ", ")) %>%
   janitor::clean_names()
 ```
-The raw homicide dataset consists of case information (uid, reported_date, disposition), geo information (city, state, lat, lon), and victim information (race, age, first and last name) of homocidal crimes on 50 large U.S. cities. The data is consist of `r nrow(homicide)` rows by `r ncol(homicide)` columns.
-
+The raw homicide dataset consists of case information (uid, reported_date, disposition), geo information (city, state, lat, lon), and victim information (race, age, first and last name) of homicidal crimes on 50 large U.S. cities. The data is consist of `r nrow(homicide)` rows by `r ncol(homicide)` columns.
 
 **summarize within cities**
 ```{r}
@@ -66,7 +65,7 @@ homicide_city_unsolved = homicide %>%
   filter(disposition == "Closed without arrest" | disposition == "Open/No arrest") %>%
   count(city_state)
 ```
-Above summarizes within cities to obtain the total number of homicides and the number of unsolved homicides (those for which the disposition is “Closed without arrest” or “Open/No arrest”)
+Above summarizes within cities to obtain the total number of homicides and the number of unsolved homicides (those for which the disposition is “Closed without arrest” or “Open/No arrest”). Also, `Tulsa, AL` has no unsolved case thus will be excluded in the analysis from this point further.
 
 **Baltimore, MD**
 
@@ -114,3 +113,14 @@ output_allcities = purrr::map_df(.x = homicide_city_unsolved$city_state, prop.al
 knitr::kable(output_allcities)
 ```
 
+**Homicide unsolved rate by city**
+```{r}
+ggplot(output_allcities, mapping = aes(x = reorder(city, -estimate), y = estimate, color = reorder(city, -estimate))) +
+  geom_point() +
+  geom_errorbar(aes(ymin = conf_low, ymax = conf_high)) +
+  labs(x = "State city", y = "Homicide unsolved rate", title = "Homicide unsolved rate by city") +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+The above graph shows the estimates and CI of unsolved rate of homicide in each city, in a decreasing order.
