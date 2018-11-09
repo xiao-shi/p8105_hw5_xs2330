@@ -50,10 +50,42 @@ From the colored spagatti plot, we see a higher score distribution in the experi
 
 ## Problem 2
 **create city_state**
-```{r}
+```{r, message=FALSE}
 raw_homicide = read_csv("./homicide-data.csv") 
 homicide = raw_homicide %>%
   mutate(city_state = str_c(city, state, sep = ", ")) %>%
   janitor::clean_names()
 ```
 The raw homicide dataset consists of case information (uid, reported_date, disposition), geo information (city, state, lat, lon), and victim information (race, age, first and last name) of homocidal crimes on 50 large U.S. cities. The data is consist of `r nrow(homicide)` rows by `r ncol(homicide)` columns.
+
+
+**summarize within cities**
+```{r}
+homicide_city_total = count(homicide, city_state)
+homicide_city_unsolved = homicide %>%
+  filter(disposition == "Closed without arrest" | disposition == "Open/No arrest") %>%
+  count(city_state)
+```
+Above summarizes within cities to obtain the total number of homicides and the number of unsolved homicides (those for which the disposition is “Closed without arrest” or “Open/No arrest”)
+
+**Baltimore, MD**
+
+**proportion of homicides that are unsolved in Baltimore**
+```{r}
+x = as.integer(homicide_city_unsolved[which(homicide_city_unsolved$city_state == "Baltimore, MD"),2])
+n = as.integer(homicide_city_total[which(homicide_city_total$city_state == "Baltimore, MD"),2])
+balti_homicide = prop.test(x,n)
+```
+
+**save the output of prop.test as an R object**
+```{r}
+save(balti_homicide, file = "./homicide_balti.rdata")
+```
+
+**tidy and pull results**
+```{r}
+balti_result = broom::tidy(balti_homicide) %>%
+  janitor::clean_names() %>%
+  select(estimate, conf_low, conf_high)
+row.names(balti_result) = "Baltimore, MD"
+```
